@@ -1,11 +1,8 @@
 # ignore all files from compilation
 x86/
-x86_64/
 mips/
-arm/
 bsa_examples/linux/libbsa/example/hello_bsa
 # ignore build and test files
-buildcfg.h
 bt_config.xml
 bt_devices.xml
 bt_hh_devices.xml
@@ -14,8 +11,6 @@ bt_ble_client_devices.xml
 test_*.wav
 # ignore temporary files
 *~
-# library header files
-*/*/libbsa/include/*.h
 
 # ignore drivers object files
 *.ko
