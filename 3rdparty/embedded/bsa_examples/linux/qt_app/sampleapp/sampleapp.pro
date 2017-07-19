@@ -18,7 +18,9 @@ SOURCES += main.cpp\
            app_manager.c \
            hfactions.cpp \
            xmlparser.cpp \
-           ble.cpp \          
+           ble.cpp \
+           app_ops.c \
+           app_opc.c \
             ../../app_ble/source/app_ble_client.c \
             ../../app_ble/source/app_ble_server.c \
             app_disc_ble.c \
@@ -37,6 +39,10 @@ SOURCES += main.cpp\
            ../../app_common/source/app_alsa.c \
            ../../app_avk/source/app_avk.c \
            ../../app_hs/source/app_hs.c \
+           ../../app_hh/source/app_hh.c \
+           ../../app_hh/source/app_hh_db.c \
+           ../../app_hh/source/app_hh_xml.c \
+           ../../app_hh/source/app_bthid.c\
            ../../app_av/source/app_av.c \
            ../../app_ag/source/app_ag.c \
            ../../app_pbc/source/app_pbc.c \
@@ -54,9 +60,16 @@ HEADERS  += bsa.h \
             hfactions.h \
             xmlparser.h \
             ble.h \
+            app_ops.h \
+            app_opc.h \
             ../../app_ble/include/app_ble_client.h \
             ../../app_avk/include/app_avk.h \
             ../../app_hs/include/app_hs.h \
+            ../../app_hh/include/app_hh.h \
+            ../../app_hh/include/app_hh_db.h \
+            ../../app_hh/include/app_hh_xml.h \
+            ../../app_hh/include/app_bthid.h \
+            ../../../../brcm/linux/bthid/bthid.h \
             ../../app_av/include/app_av.h \
             ../../app_ag/include/app_ag.h \
             ../../app_pbc/source/app_pbc.h \
@@ -71,7 +84,7 @@ HEADERS  += bsa.h \
 FORMS    += bsa.ui \
     blerwinfodlg.ui
 
-LIBS += -L$$PWD/../../../../bsa_examples/linux/libbsa/build/x86/sharedlib/ -lbsa
+LIBS += -L$$PWD/../../../../bsa_examples/linux/libbsa/build/$$BSA_QT_ARCH/sharedlib/ -lbsa
 INCLUDEPATH += ../../../../../../3rdparty/embedded/bsa_examples/linux/qt_app/sampleapp
 INCLUDEPATH += ../../../../../../3rdparty/embedded/bsa_examples/linux/app_common/include
 INCLUDEPATH += ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/include
@@ -79,9 +92,11 @@ INCLUDEPATH += ../../../../../../3rdparty/embedded/bsa_examples/linux/app_ag/inc
 INCLUDEPATH += ../../../../../../3rdparty/embedded/bsa_examples/linux/app_av/include
 INCLUDEPATH += ../../../../../../3rdparty/embedded/bsa_examples/linux/app_avk/include
 INCLUDEPATH += ../../../../../../3rdparty/embedded/bsa_examples/linux/app_hs/include
+INCLUDEPATH += ../../../../../../3rdparty/embedded/bsa_examples/linux/app_hh/include
 INCLUDEPATH += ../../../../../../3rdparty/embedded/bsa_examples/linux/app_pbc/source
 INCLUDEPATH += ../../../../../../3rdparty/embedded/bsa_examples/linux/app_mce/source
 INCLUDEPATH += ../../../../../../3rdparty/embedded/bsa_examples/linux/app_ble/include
+INCLUDEPATH += ../../../../../../3rdparty/embedded/brcm/linux/bthid/
 
 LIBS += -lasound -lrt
 
@@ -102,4 +117,13 @@ DEFINES += QT_APP
 DEFINES += PCM_ALSA
 DEFINES += BLE_INCLUDED=TRUE
 DEFINES += BTA_GATT_INCLUDED=TRUE
+DEFINES += APP_BTHID_INCLUDED=TRUE
 
+unix: {
+    # install library and headers
+    isEmpty(PREFIX) {
+      PREFIX = /usr/local
+    }
+    target.path = $$PREFIX/bin
+    INSTALLS += target
+}

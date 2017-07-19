@@ -19,6 +19,14 @@ extern "C"
 #include "app_mce.h"
 #include "app_av.h"
 #include "app_ag.h"
+#include "app_ops.h"
+#include "app_opc.h"
+#include "app_hh.h"
+#include "app_hh_db.h"
+#include "app_hh_xml.h"
+#include "app_ble_qt.h"
+
+
 
     /*
     * Global variables

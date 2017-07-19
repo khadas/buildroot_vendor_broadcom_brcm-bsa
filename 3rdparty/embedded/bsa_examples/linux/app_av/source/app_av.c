@@ -836,7 +836,7 @@ tAPP_AV_CONNECTION *app_av_find_connection_by_handle(tBSA_AV_HNDL handle)
  ** Returns          Pointer to the found structure or NULL
  **
  *******************************************************************************/
-static tAPP_AV_CONNECTION *app_av_find_connection_by_bd_addr(BD_ADDR bd_addr)
+tAPP_AV_CONNECTION *app_av_find_connection_by_bd_addr(BD_ADDR bd_addr)
 {
     int index;
     for (index = 0; index < APP_AV_MAX_CONNECTIONS; index++)
@@ -4010,6 +4010,43 @@ int app_av_deregister(int index)
     return 0;
 }
 
+/*******************************************************************************
+ **
+ ** Function         app_av_deregister_by_connection
+ **
+ ** Description      DeRegister an AV source point
+ **
+ ** Returns          0 if successful, error code otherwise
+ **
+ *******************************************************************************/
+int app_av_deregister_by_connection(tAPP_AV_CONNECTION *connection)
+{
+    tBSA_AV_DEREGISTER deregister_param;
+    tBSA_STATUS status;
+
+    if (!connection->is_registered)
+    {
+        APP_ERROR1("connection index %d not registered", index);
+        return -1;
+    }
+
+    /* In case we were playing, this could trigger an AV stop so we must
+     * disable the play list type to prevent confusing STOP before START
+     * in list and complete STOP */
+    app_av_cb.play_list = FALSE;
+
+    /* Deregister AV */
+    BSA_AvDeregisterInit(&deregister_param);
+    deregister_param.handle = connection->handle;
+    status = BSA_AvDeregister(&deregister_param);
+    if (status != BSA_SUCCESS)
+    {
+        APP_ERROR1("BSA_AvDeregister failed status=%d", status);
+    }
+
+    connection->is_registered = FALSE;
+    return 0;
+}
 /*******************************************************************************
  **
  ** Function         app_av_init

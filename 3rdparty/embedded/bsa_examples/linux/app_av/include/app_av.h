@@ -84,6 +84,17 @@ typedef struct
 
 /*******************************************************************************
  **
+ ** Function         app_av_find_connection_by_bd_addr
+ **
+ ** Description      This function finds the connection structure by its handle
+ **
+ ** Returns          Pointer to the found structure or NULL
+ **
+ *******************************************************************************/
+tAPP_AV_CONNECTION *app_av_find_connection_by_bd_addr(BD_ADDR bd_addr);
+
+/*******************************************************************************
+ **
  ** Function         app_av_init
  **
  ** Description      Init AV application
@@ -125,6 +136,17 @@ int app_av_register(void);
  **
  *******************************************************************************/
 int app_av_deregister(int index);
+
+/*******************************************************************************
+ **
+ ** Function         app_av_deregister_by_connection
+ **
+ ** Description      DeRegister an AV source point
+ **
+ ** Returns          0 if successful, error code otherwise
+ **
+ *******************************************************************************/
+int app_av_deregister_by_connection(tAPP_AV_CONNECTION *connection);
 
 /*******************************************************************************
  **

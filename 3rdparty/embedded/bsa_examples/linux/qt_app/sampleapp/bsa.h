@@ -51,6 +51,15 @@ public:
     tBSA_DISC_NEW_MSG msg;
 };
 
+// File
+class Bsa_File
+{
+public:
+    char name[256];
+    char fullpath[1024];
+};
+
+
 typedef struct
 {
     QString handleStr;
@@ -109,6 +118,7 @@ public:
 
 signals:
     void SignalPairingRequest(QString st);
+    void SignalOpsAccessRequest(QString st);
     void SignalDiscovery();
     void SignalPBRead();
     void SignalCLCCRead();
@@ -148,6 +158,7 @@ public:
     /*************************************************************************************/
 public:
     void DefaultVisibility();
+    void Enable_btn(BOOLEAN enable);
     int app_mgr_sec_bond(BD_ADDR bd_addr);
     int remove_device(BD_ADDR bd_addr);
     void GetPairedDevices();
@@ -194,9 +205,15 @@ private slots:
 
     void on_btnBle_clicked();
 
+    void on_btnOpush_clicked();
+
     void on_btnPhonebook_clicked();
 
     void on_btnRemove_clicked();
+
+    void on_btnConnectHid_clicked();
+
+    void on_btnDisconnectHid_clicked();
 
     void on_btnReject_clicked();
 
@@ -204,7 +221,11 @@ private slots:
 
     void on_BSA_pair_request(QString st);
 
+    void on_BSA_ops_access_request(QString st);
+
     void on_BSA_Discovery();
+
+    void Deregister_av_connection(void);
 
 
     void on_radioButtonCarkit_clicked();
@@ -689,6 +710,25 @@ public:
         BOOLEAN m_bInit;
         bool m_bEnableAudioRelay;
         bool m_bAvOpen;
+
+
+
+    /*************************************************************************************/
+    /*************** Opush UI ************************************************************/
+    /*************************************************************************************/
+public:
+        void opc_add_file_to_list(char *name, char *fullpath);
+        void search_files(const char *path);
+
+        QList<Bsa_File> m_opush_file_list;
+        int m_ofile_row_number;
+public slots:
+        // Opush
+        void on_btnOpushRefresh_clicked();
+
+        void on_btnSendFile_clicked();
+//        void on_tblFileList_clicked(const QModelIndex &index);
+
 };
 
 Q_DECLARE_METATYPE(MediaPlayer);
