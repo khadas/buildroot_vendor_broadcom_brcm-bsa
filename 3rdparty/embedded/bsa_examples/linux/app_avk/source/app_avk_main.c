@@ -26,6 +26,11 @@
 #include "app_mgt.h"
 #include "app_disc.h"
 #include "app_utils.h"
+#include "app_socket.h"
+
+tAPP_SOCKET app_socket;
+char sock_path[]="/etc/bsa/config/socket_avk";
+
 
 /* Menu items */
 enum
@@ -134,10 +139,34 @@ static BOOLEAN app_avk_mgt_callback(tBSA_MGT_EVT event, tBSA_MGT_MSG *p_data)
  *******************************************************************************/
 int main(int argc, char **argv)
 {
-    int choice, avrcp_evt;
+    int choice, avrcp_evt, bytes, i;
     int connection_index;
     UINT16 delay;
     tAPP_AVK_CONNECTION *connection = NULL;
+    char msg[64];
+    int use_socket = 0;
+
+    for (i = 1; i < argc; i++)
+    {
+        char *arg = argv[i];
+        if (*arg != '-')
+        {
+            APP_ERROR1("Unsupported parameter #%d : %s", i+1, argv[i]);
+            exit(-1);
+        }
+        /* Bypass the first '-' char */
+        arg++;
+        /* check if the second char is also a '-'char */
+        if (*arg == '-') arg++;
+        switch (*arg)
+        {
+            case 's':
+                use_socket = 1;
+                break;
+            default:
+                break;
+        }
+    }
 
     /* Open connection to BSA Server */
     app_mgt_init();
@@ -152,13 +181,35 @@ int main(int argc, char **argv)
 
     app_avk_init(NULL);
 
+    if (use_socket == 1) {
+        strcpy(app_socket.sock_path, sock_path);
+        if ((setup_socket_server(&app_socket)) < 0)
+            return 0;
+        if (accpet_client(&app_socket) < 0)
+            return 0;
+        printf("client connted\n");
+    }
     do
     {
 
 
         app_avk_display_main_menu();
 
-        choice = app_get_choice("Select action");
+        if (use_socket == 0) {
+            choice = app_get_choice("Select action");
+        } else {
+            memset(msg,0,sizeof(msg));
+            bytes = socket_recieve(app_socket.client_sockfd, msg, sizeof(msg));
+            if (bytes == 0 ) {
+                printf("client leaved, waiting for reconnect\n");
+                if (accpet_client(&app_socket) < 0)
+                    return 0;
+                continue;
+            }
+
+            choice = atoi(msg);
+            printf("msg = %s, choice :%d\n",msg, choice);
+        }
 
         switch (choice)
         {
@@ -322,13 +373,14 @@ int main(int argc, char **argv)
             break;
         }
     } while (choice != APP_AVK_MENU_QUIT); /* While user don't exit application */
-
     /* Terminate the profile */
     app_avk_end();
 
-
     /* Close BSA before exiting (to release resources) */
     app_mgt_close();
+
+    if (use_socket == 1)
+            teardown_socket_server(&app_socket);
 
     return 0;
 }

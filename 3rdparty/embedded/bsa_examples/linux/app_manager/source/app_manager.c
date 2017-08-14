@@ -637,6 +637,9 @@ void app_mgr_security_callback(tBSA_SEC_EVT event, tBSA_SEC_MSG *p_data)
         APP_DEBUG0("    You must accept or refuse using menu\n");
         bdcpy(app_sec_db_addr, p_data->cfm_req.bd_addr);
         app_sec_is_ble = p_data->cfm_req.is_ble;
+
+        APP_DEBUG0("\tSimple Pairing automatically Accepted");
+        app_mgr_sp_cfm_reply(TRUE, p_data->cfm_req.bd_addr);
         break;
 
     case BSA_SEC_SP_KEY_NOTIF_EVT: /* Simple Pairing Passkey Notification */
